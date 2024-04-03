@@ -1,0 +1,49 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Enemy : MonoBehaviour
+{
+    public float speed; //speed in m/s
+    public Vector3 moveDirection;
+    public float moveDistance;
+
+    private Vector3 startPos; //private to enemy
+    private bool movingToStart; //private to enemy
+
+    void Start()
+    {
+        startPos = transform.position;
+    }
+
+    void Update()
+    {
+        if(movingToStart)
+        {
+//we are transforming the position of our enemy = Vector3 (a point in 3D space x,y,z) towards a position (from our current position, to our target position, at a rate of speed x change in time)
+            transform.position = Vector3.MoveTowards(transform.position, startPos, speed * Time.deltaTime); 
+// without * time.deltatime, speed would be multiplied by the frame rate
+            if(transform.position == startPos)
+            {
+                movingToStart = false;
+            }
+        }
+          
+        else
+        {
+            transform.position = Vector3.MoveTowards(transform.position, startPos + (moveDirection * moveDistance), speed * Time.deltaTime);
+            if(transform.position == startPos + (moveDirection *           moveDistance))
+            {
+                movingToStart = true;
+            }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other) //when the enemy collides with something else, other i.e our player
+    {
+       if (other.CompareTag("Player")) //does the other object have the tag "Player"
+        {
+            other.GetComponent<Player>().GameOver(); //if it is the player, get the Player script and return the function GameOver
+        }
+    }
+}
