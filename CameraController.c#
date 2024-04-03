@@ -1,0 +1,15 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CameraFollow : MonoBehaviour
+{
+    public Transform target; //need to give camera a target
+    public Vector3 offset; //need a distance offset from the player
+
+    // Update is called once per frame
+    void Update()
+    {
+        transform.position = target.position + offset; //we want to update the cameras position every frame
+    }
+}
