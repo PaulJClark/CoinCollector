@@ -1,0 +1,68 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement; 
+
+public class Player : MonoBehaviour
+{
+    public float moveSpeed; 
+    public Rigidbody rig;
+    public float jumpForce;
+    public int score; 
+
+    private bool isGrounded; 
+    public UI ui; //UI variable
+
+    void Update() 
+    {
+        //MOVEMENT CONTROL
+        float x = Input.GetAxis("Horizontal") * moveSpeed; //Horizontal is A & D or Left and Right Arrow on the keyboard
+        float z = Input.GetAxis("Vertical") * moveSpeed;
+
+        rig.velocity = new Vector3(x, rig.velocity.y, z); //X velocity is changed by input, y is not changed and stays the same as it will be affected by gravity and jumping, is zero as we are not affecting forward and back
+
+        Vector3 vel = rig.velocity; // creating a copy of our variable vel is which is equal to the velocity of our rigid body ie player velocity
+        vel.y = 0; //velocity in the y axis (up/down) is set to 0
+
+        //ROTATION CONTROL
+        if(vel.x != 0 || vel.z != 0) // != does not equal, || or, this if functions means we will only rotate if we're moving
+        {
+            transform.forward = vel;
+        }
+        //JUMPING CONTROL
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true) //&& is and, == is equals
+        {
+            isGrounded = false;
+            rig.AddForce(Vector3.up * jumpForce, ForceMode.Impulse); //force = gradual force, impulse = instant velocity
+        }
+        //JUMP OFF EDGE = GAME OVER
+        if(transform.position.y < -10) //when the player has fallen 10m below the y origin, call game over
+        {
+            GameOver();
+        }
+
+    }
+
+    //STANDING CONTROL
+    private void OnCollisionEnter(Collision collision) //this function gets called whenever another collider is hit by our collider, OnCollisionEnter is built into Unity
+    {
+        if (collision.contacts[0].normal == Vector3.up) //normal is an arrow extending out from the direction it is facing, [0] is the one point of contact as our collider is spherical
+        {
+            isGrounded = true;
+        }
+                
+    }
+
+    //GAME OVER - RELOAD ACTIVE SCENE
+    public void GameOver () //void being a return type, void meaning nothing. () is blank but maybe we could have a game over screen function
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); //telling the computer to load in our current scene
+    }
+
+    //SCORE CONTROL
+    public void AddScore (int amount)
+    {
+        score += amount; //we will be adding any amount we send over to our score
+        ui.SetScoreText(score);
+    }
+}
