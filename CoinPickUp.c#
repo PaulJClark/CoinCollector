@@ -1,0 +1,26 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Coin : MonoBehaviour
+{
+public float rotateSpeed;
+public AudioClip coinSound;
+
+void Update()
+{
+    //ROTATION CONTROL
+    transform.Rotate(Vector3.up, rotateSpeed * Time.deltaTime);
+}
+ 
+//COLLIDER CONTROL
+private void OnTriggerEnter(Collider other)
+{
+    if (other.CompareTag("Player")) //is the collision with the player?
+    {
+ 
+        other.GetComponent<Player>().AddScore(1); //Sending a score to the player script "Add Score"
+        AudioSource.PlayClipAtPoint(coinSound, transform.position, 1000f);
+        Destroy(gameObject); //destroy this gameobject
+    }
+}
